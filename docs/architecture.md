@@ -6,13 +6,14 @@
 |---|---|---|---|
 | Extension entry | `extension/src/extension.js` | VS Code extension host | Registers the commands and the sidebar view, builds the webview HTML (an iframe to `http://localhost:<port>`), reads settings and the password, forks and stops the server, and points the open webviews at the port the server reports. |
 | Local server | `extension/src/server.js` | Child process (`child_process.fork`, `ELECTRON_RUN_AS_NODE=1`) | Reverse proxy built on `http` + `http-proxy-middleware` 2.x. Serves WhatsApp Web, strips framing and security headers, injects the patch, applies the outbound proxy. |
-| Patch | `extension/src/patch.js` | Browser (page, workers, service worker) | `rerouteWhatsAppTraffic(scope)`: wraps `WebSocket`, `fetch` and `XMLHttpRequest.prototype.open` so WhatsApp URLs go to the local server. Exported as `PATCH`, the source text `(fn)(self);\n`. |
+| Patch | `extension/src/patch.js` | Browser (page, workers, service worker) | `rerouteWhatsAppTraffic(scope)`: wraps `WebSocket`, `fetch` and `XMLHttpRequest.prototype.open` so WhatsApp URLs go to the local server. `bridgeToExtension(scope)`: unread count and notification stand-in, posted to the parent window (page only). Exported as `PATCH`, the source text of both functions called with `self`. |
+| Accounts | `extension/src/accounts.js` | Extension host (and tests) | `accountList(names)`, `accountUrl(account, port)`: account names to host-name slugs and URLs. |
 | Proxy URL builder | `extension/src/proxyUrl.js` | Extension host (and tests) | `buildProxyUrl(settings, password)`: validates settings, returns a proxy URL, `null` (direct) or throws. |
-| Tests | `extension/test/proxy.test.js`, `extension/test/server.test.js` | Node (`node --test`) | Unit tests for `proxyUrl.js` and `patch.js`; `server.test.js` forks the real server to test the port fallback. |
+| Tests | `extension/test/*.test.js` | Node (`node --test`) | Unit tests for `proxyUrl.js`, `patch.js` and `accounts.js`; `server.test.js` forks the real server to test the port fallback. |
 
 Constants in `server.js`: `HOST = '127.0.0.1'`, `PORT_ATTEMPTS = 10`, `PING_PATH = '/__whatsapp-vscode/ping'`, `PING_REPLY = 'whatsapp-vscode'`, `UPSTREAM = ORIGIN = 'https://web.whatsapp.com'`, `USER_AGENT` (a desktop Chrome), `STRIPPED_HEADERS`.
 
-Command and view IDs: `whatsapp-vscode.openWhatsAppWeb`, `whatsapp-vscode.setProxyPassword`, view `whatsappWebview` in container `whatsapp-sidebar`, webview panel type `whatsappWebviewTab`. Secret key: `whatsapp-vscode.proxy.password`. Output channel: `WhatsApp-VSCode`.
+Command and view IDs: `whatsapp-vscode.openWhatsAppWeb`, `whatsapp-vscode.setProxyPassword`, `whatsapp-vscode.toggleDoNotDisturb`, `whatsapp-vscode.sendSelection`, `whatsapp-vscode.toggle`, `whatsapp-vscode.moveView`, view `whatsappWebview` in container `whatsapp-sidebar`, webview panel type `whatsappWebviewTab`. Secret key: `whatsapp-vscode.proxy.password`. Output channel: `WhatsApp-VSCode`.
 
 ## Request flow
 
@@ -26,11 +27,22 @@ flowchart LR
 
 Page and asset requests:
 
-1. The webview HTML contains `<iframe src="http://localhost:<port>">`, where `<port>` is the one the server reported.
+1. The webview HTML contains an iframe whose `src` is `http://localhost:<port>` (or `http://<slug>.localhost:<port>` for an extra account), where `<port>` is the one the server reported.
 2. The server forwards a request path as is to `https://web.whatsapp.com`.
 3. The response goes through `responseInterceptor`: `x-frame-options`, `content-security-policy`, `content-security-policy-report-only`, `cross-origin-embedder-policy` and `cross-origin-opener-policy` are removed, `Domain=` is stripped from `set-cookie` (localhost rejects it) and `Location` loses the upstream origin. For HTML and JavaScript responses with status 200 the `PATCH` text is injected (inline `<script>` right after `<head>` for HTML, prepended for JavaScript) and `ETag`/`Last-Modified` are removed.
 4. Incoming `If-None-Match` and `If-Modified-Since` are deleted, so the server always receives a full body and a copy cached before patching is never revalidated with a 304.
 5. Upstream requests and WebSocket upgrades get fixed headers through `headers` (proxy agents connect asynchronously, so `onProxyReq` would run after the headers are sent): `origin`, `referer`, a desktop Chrome `user-agent`, `sec-fetch-site: same-origin` and `accept-encoding: gzip, deflate, br`. Without a browser-like user agent and fetch metadata WhatsApp returns an error page, and `zstd` is left out because `responseInterceptor` cannot decode it.
+
+## Page to extension channel
+
+`bridgeToExtension(scope)` in `patch.js` runs only in a window with a different parent (the iframe in the webview). It posts `{ source: 'whatsapp-vscode', type, ... }` to the parent. A script in the webview HTML accepts only messages whose `event.source` is the iframe's window and whose `data.source` is `whatsapp-vscode`, adds the `account` slug the iframe shows, and forwards them with `acquireVsCodeApi().postMessage`. The extension validates every field in `handleMessage`. Nothing flows from the extension to the page.
+
+- `unread`: a `MutationObserver` on `document.head` reads `document.title`; a leading `(N)` is the unread chat count, otherwise 0. Posted only when the count changes. The extension keeps a count per account, sets the sidebar view badge and the status bar item to the sum.
+- `notify`: `scope.Notification` is replaced by a stand-in with `permission` `granted`, a `requestPermission()` that resolves `granted` (and calls a callback argument), and a constructor that posts `{ title, body }` and returns an `EventTarget` with a no-op `close()` and settable `onclick`, `onclose`, `onerror` and `onshow`. The extension shows an information message unless notifications are disabled, Do Not Disturb is on, or a debug session is active and `muteWhileDebugging` is set. The "Open" button focuses the sidebar view.
+
+## Accounts
+
+The default account is `http://localhost:<port>`. An extra account named in `whatsapp-vscode.accounts` uses `http://<slug>.localhost:<port>` (`src/accounts.js`). Chromium resolves `*.localhost` to loopback and every host name is a separate origin, so each account has its own WhatsApp storage and login. The server needs no change: it binds `127.0.0.1`, `patch.js` already uses `scope.location.host` for the rerouted URLs, and the cookie `Domain` is stripped. The sidebar webview shows a `<select>` when there is more than one account; switching only changes the iframe `src` and is kept in the webview state. A tab is bound to the account chosen in its QuickPick.
 
 ## How WhatsApp traffic is rerouted
 

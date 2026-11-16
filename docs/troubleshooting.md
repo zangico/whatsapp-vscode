@@ -24,4 +24,7 @@ Root causes are explained in [architecture.md](architecture.md#known-limitations
 | WhatsApp shows "connecting" after changing a proxy setting | Open webviews are not reloaded when the server restarts. | **Developer: Reload Webviews**, or reopen the tab. |
 | Logged out after an update | The login lives in the storage of the origin `http://localhost:<port>`; clearing webview data or a different port (changed setting or fallback) resets it. | Log in again. The session on each port survives normal restarts. |
 | Sidebar and tab ask for login separately | They are separate webviews; sharing depends on Chromium storage partitioning (not verified). | Log in in each, or use one of them. |
+| No notifications or unread badge after starting VS Code | They come from the WhatsApp page, which only runs once the WhatsApp view (or a tab) has been opened. | Open the WhatsApp view once; it keeps running while hidden. |
+| No notification for a message | Do Not Disturb is on (bell-slash in the status bar), a debug session is active, or `whatsapp-vscode.notifications.enabled` is off. | Toggle Do Not Disturb or change the `notifications` settings. |
+| A new account asks for the QR code | Each account is a separate origin and has its own login. | Link the device once per account. |
 | IPv6 proxy address is rejected | Host must be in square brackets. | Use `[::1]`, not `::1`. |

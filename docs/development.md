@@ -47,6 +47,8 @@ npm test        # node --test
 
 These tests open loopback ports, so they need permission to listen on `127.0.0.1` (a sandbox that blocks listening makes them fail).
 
+`extension/test/bridge.test.js` covers `bridgeToExtension` with a fake scope (no message outside a frame, unread parsing from the title and posting only on change, the `Notification` stand-in) and `extension/test/accounts.test.js` covers the account slugs and URLs.
+
 Not covered by tests: the proxying itself in `server.js`, `extension.js`, real proxies, VS Code integration. The listed devDependencies `@vscode/test-cli`, `@vscode/test-electron`, `eslint`, `typescript` and `@types/mocha` are installed but not used by any script or config in the repository.
 
 ## Running the server standalone

@@ -4,6 +4,13 @@ WhatsApp for VSCode: use WhatsApp Web inside VS Code, in the sidebar or in an ed
 
 - Optional proxy for all WhatsApp traffic: HTTP, HTTPS, SOCKS4 or SOCKS5, with authentication.
 - The proxy password is kept in the operating system keychain.
+- Unread badge on the sidebar icon and a status bar counter.
+- Notifications as VS Code messages, with Do Not Disturb (`WhatsApp: Toggle Do Not Disturb`) and muting while you debug.
+- Several accounts, each with its own login (`whatsapp-vscode.accounts`).
+- `WhatsApp: Copy Selection for Chat` (editor context menu) copies the selected code as a WhatsApp code block; paste it into a chat.
+- `WhatsApp: Toggle Chat` (`Ctrl+Alt+W`, `Cmd+Alt+W` on macOS) shows or hides the sidebar.
+- `WhatsApp: Move View...` moves WhatsApp to the bottom panel or the secondary sidebar (dragging the activity-bar icon works too).
+- `whatsapp-vscode.zoom` scales the WhatsApp view (50-200%).
 
 ## Usage
 
@@ -28,12 +35,14 @@ Local port:
 
 - `whatsapp-vscode.server.port`: local port of the server that serves WhatsApp Web (default `49153`, 1024-65535). If it is used by another program, the next 9 ports are tried in order. WhatsApp keeps a separate login for each port, so changing the port means logging in again.
 
+Other settings: `whatsapp-vscode.accounts` (names of extra accounts), `whatsapp-vscode.zoom`, `whatsapp-vscode.notifications.enabled`, `.showPreview`, `.muteWhileDebugging` and `whatsapp-vscode.statusBar.enabled`. Notifications and the unread counter work once the WhatsApp view has been opened in the window.
+
 For the password run the command `WhatsApp: Set Proxy Password`. Invalid settings never fall back to a direct connection: WhatsApp is not loaded and an error is shown.
 
 ## Known Issues
 - Voice messages cannot be recorded
 - Audio/video calls do not work
-- Not tested: file and media transfers, notifications
+- Not tested: file and media transfers
 
 Every feedback would be appreciated
 If you need help or have any question, feel free to ask at zangico@gmail.com
@@ -43,6 +52,13 @@ If you need help or have any question, feel free to ask at zangico@gmail.com
 If you find this extension useful, you can [buy me a coffee](https://buymeacoffee.com/zangico) ☕ (also from the heart icon at the top of the WhatsApp sidebar; hide it with `whatsapp-vscode.showSupportButton`)
 
 ## Release Notes
+
+### 1.1.0
+
+- Unread badge on the sidebar icon and in the status bar
+- VS Code notifications with Do Not Disturb, preview and mute-while-debugging settings
+- Multiple accounts (`whatsapp-vscode.accounts`)
+- Copy selection for chat, toggle shortcut, move view and zoom
 
 ### 1.0.0
 

@@ -11,6 +11,12 @@ All settings are defined in `extension/package.json` under `contributes.configur
 | `whatsapp-vscode.proxy.host` | string | `""` | Proxy host name or IP address. IPv6 addresses go in square brackets, for example `[::1]`. Surrounding whitespace is trimmed. |
 | `whatsapp-vscode.proxy.port` | integer or null | `null` | Proxy port, 1 to 65535. Required when `type` is not `none`. |
 | `whatsapp-vscode.proxy.username` | string | `""` | User name, if the proxy requires authentication. Empty means no authentication. |
+| `whatsapp-vscode.accounts` | array of strings | `[]` | Names of extra accounts. The default account always exists and keeps `http://localhost:<port>`. An extra account is served from `http://<slug>.localhost:<port>`, where the slug is the name lowercased with every run of characters outside `a-z0-9` turned into `-` and trimmed (at most 63 characters); empty and duplicate slugs are ignored. Each host name is a separate origin, so each account has its own login. Does not restart the server. |
+| `whatsapp-vscode.zoom` | integer | `100` | Zoom of the WhatsApp view in percent, 50 to 200. |
+| `whatsapp-vscode.notifications.enabled` | boolean | `true` | Show WhatsApp notifications as VS Code information messages. |
+| `whatsapp-vscode.notifications.showPreview` | boolean | `true` | Include the message text in the notification. |
+| `whatsapp-vscode.notifications.muteWhileDebugging` | boolean | `true` | Skip notifications while a debug session is active. |
+| `whatsapp-vscode.statusBar.enabled` | boolean | `true` | Show the unread counter and the Do Not Disturb indicator in the status bar. |
 | `whatsapp-vscode.showSupportButton` | boolean | `true` | Shows the heart (Buy Me a Coffee) button in the WhatsApp sidebar header. Does not restart the server. |
 
 Proxy types map to these URL schemes (`extension/src/proxyUrl.js`):
@@ -21,6 +27,19 @@ Proxy types map to these URL schemes (`extension/src/proxyUrl.js`):
 | `https` | `https://` | TLS to the proxy itself (`https-proxy-agent`). |
 | `socks4` | `socks4a://` | Host names are resolved by the proxy (`socks-proxy-agent`). |
 | `socks5` | `socks5h://` | Host names are resolved by the proxy (`socks-proxy-agent`). |
+
+## Commands
+
+| Command | Meaning |
+|---|---|
+| **WhatsApp: Toggle Do Not Disturb** (`whatsapp-vscode.toggleDoNotDisturb`) | Mutes or unmutes notifications. Stored in the extension's global state; the status bar shows `$(bell-slash)` while it is on (click it to turn it off). |
+| **WhatsApp: Copy Selection for Chat** (`whatsapp-vscode.sendSelection`) | In the editor context menu when text is selected. Copies the selection as a WhatsApp monospace block (three backticks around the code) to the clipboard and reveals the sidebar; paste it into a chat. |
+| **WhatsApp: Toggle Chat** (`whatsapp-vscode.toggle`) | `Ctrl+Alt+W` (`Cmd+Alt+W` on macOS). Closes the sidebar if the WhatsApp view is visible, otherwise focuses it. |
+| **WhatsApp: Move View...** (`whatsapp-vscode.moveView`) | Focuses the view and opens VS Code's "Move View" picker (bottom panel, secondary sidebar...). Dragging the activity-bar icon also works. |
+
+With more than one account the sidebar shows an account selector (the choice is remembered), and **Open WhatsApp in Tab** asks which account to open.
+
+Notifications and the unread counter come from the WhatsApp page, so they start once the WhatsApp view (or a tab) has been opened in the window.
 
 ## Password command
 

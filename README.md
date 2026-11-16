@@ -6,6 +6,10 @@ A VS Code extension that shows WhatsApp Web (`https://web.whatsapp.com/`) inside
 
 - WhatsApp in the sidebar (view `whatsappWebview`, container `whatsapp-sidebar`) and in an editor tab (command `whatsapp-vscode.openWhatsAppWeb`, title "Open WhatsApp in Tab").
 - Proxy support (HTTP, HTTPS, SOCKS4, SOCKS5) for all WhatsApp traffic, with optional authentication. The password is stored in the OS keychain (VS Code SecretStorage).
+- Unread count on the sidebar badge and in the status bar (read from the WhatsApp page title).
+- Notifications as VS Code messages with Do Not Disturb, optional message preview and muting while debugging.
+- Several accounts (`whatsapp-vscode.accounts`), each with its own login.
+- Commands: **WhatsApp: Copy Selection for Chat**, **WhatsApp: Toggle Chat** (`Ctrl+Alt+W`, `Cmd+Alt+W` on macOS), **WhatsApp: Move View...**, and the `whatsapp-vscode.zoom` setting.
 - Configurable local port (`whatsapp-vscode.server.port`, default 49153) with automatic fallback to the next 9 ports when it is used by another program.
 - Fail closed: invalid proxy settings never fall back to a direct connection.
 - The local server runs on VS Code's own Node runtime, listens on loopback only and stops with the extension.
@@ -43,12 +47,15 @@ A VS Code extension that shows WhatsApp Web (`https://web.whatsapp.com/`) inside
     │   ├── icon.png           Extension icon
     │   └── sidebar_icon.svg   Activity-bar icon
     ├── src/
+    │   ├── accounts.js        Account names -> host names (slug)
     │   ├── extension.js       Extension host entry: commands, webviews, server lifecycle
     │   ├── server.js          Local reverse proxy; runs as a child process
     │   ├── patch.js           Script prepended to every JavaScript response
     │   └── proxyUrl.js        Settings -> proxy URL (validation)
     └── test/
-        ├── proxy.test.js      node:test unit tests for proxyUrl.js and patch.js
+        ├── accounts.test.js   node:test unit tests for accounts.js
+        ├── bridge.test.js     node:test unit tests for the page-to-extension bridge in patch.js
+        ├── proxy.test.js      node:test unit tests for proxyUrl.js and the reroute patch
         └── server.test.js     node:test tests that fork the real server (port fallback, sharing, take-over)
 ```
 
