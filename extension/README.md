@@ -59,6 +59,7 @@ If you find this extension useful, you can [buy me a coffee](https://buymeacoffe
 - VS Code notifications with Do Not Disturb, preview and mute-while-debugging settings
 - Multiple accounts (`whatsapp-vscode.accounts`)
 - Copy selection for chat, toggle shortcut, move view and zoom
+- Linked devices show as "whatsapp-vscode" on the phone (link the device again to rename an existing one)
 
 ### 1.0.0
 

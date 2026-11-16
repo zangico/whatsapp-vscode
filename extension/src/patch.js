@@ -70,8 +70,48 @@ function bridgeToExtension(scope) {
     else watch();
 }
 
+// WhatsApp names a linked device after the operating system it reads from the user agent ("Mac OS"). The phone
+// lists that name from the device properties sent once, at pairing, so they are rewritten as they are encoded.
+// WhatsApp's modules register through a global __d(name, deps, factory) that its loader assigns on load.
+function nameLinkedDevice(scope) {
+    if (scope.__whatsappVscodeDeviceName) return;
+    scope.__whatsappVscodeDeviceName = true;
+
+    const isDeviceProps = (value) => value !== null && typeof value === 'object'
+        && 'os' in value && 'platformType' in value && 'requireFullSync' in value;
+    const wrapEncoder = (exports) => {
+        const encode = exports?.encodeProtobuf;
+        if (typeof encode !== 'function') return;
+        exports.encodeProtobuf = function (spec, value, ...rest) {
+            return encode.call(this, spec, isDeviceProps(value) ? { ...value, os: 'whatsapp-vscode' } : value, ...rest);
+        };
+    };
+
+    let define;
+    Object.defineProperty(scope, '__d', {
+        configurable: true,
+        get: () => define,
+        set: (original) => {
+            define = typeof original !== 'function' ? original : function (name, deps, factory, ...rest) {
+                if (name !== 'encodeProtobuf' || typeof factory !== 'function') {
+                    return original.call(this, name, deps, factory, ...rest);
+                }
+                const wrapped = function (...args) {
+                    const result = factory.apply(this, args);
+                    args.forEach(wrapEncoder);
+                    return result;
+                };
+                // Keep the factory's arity, in case the loader reads it.
+                Object.defineProperty(wrapped, 'length', { value: factory.length });
+                return original.call(this, name, deps, wrapped, ...rest);
+            };
+        },
+    });
+}
+
 module.exports = {
     rerouteWhatsAppTraffic,
     bridgeToExtension,
-    PATCH: `(${rerouteWhatsAppTraffic})(self);\n(${bridgeToExtension})(self);\n`,
+    nameLinkedDevice,
+    PATCH: `(${rerouteWhatsAppTraffic})(self);\n(${bridgeToExtension})(self);\n(${nameLinkedDevice})(self);\n`,
 };
