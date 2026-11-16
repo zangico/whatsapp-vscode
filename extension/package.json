@@ -3,7 +3,7 @@
   "displayName": "whatsapp-vscode",
   "description": "WhatsApp for VSCode",
   "version": "1.0.0",
-  "publisher": "livingasync",
+  "publisher": "zangico",
   "icon": "images/icon.png",
   "sponsor": {
     "url": "https://buymeacoffee.com/zangico"

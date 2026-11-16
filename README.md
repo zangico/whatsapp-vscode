@@ -13,7 +13,7 @@ A VS Code extension that shows WhatsApp Web (`https://web.whatsapp.com/`) inside
 
 ## Quick usage
 
-1. Install the extension (publisher `livingasync`, name `whatsapp-vscode`; VS Code >= 1.91).
+1. Install the extension (publisher `zangico`, name `whatsapp-vscode`; VS Code >= 1.91).
 2. Click the WhatsApp icon in the activity bar, or run **Open WhatsApp in Tab** from the Command Palette.
 3. Link the device with the QR code (see [troubleshooting](docs/troubleshooting.md) for known limitations).
 4. To use a proxy, set `whatsapp-vscode.proxy.type`, `.host`, `.port` (and optionally `.username` plus the **WhatsApp: Set Proxy Password** command). See [docs/configuration.md](docs/configuration.md).
