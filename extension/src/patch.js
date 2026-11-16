@@ -35,7 +35,43 @@ function rerouteWhatsAppTraffic(scope) {
     }
 }
 
+// Runs in the page only (inside the extension's webview iframe). The webview forwards these messages to
+// the extension: unread chats from the document title, and notifications through a stand-in for the
+// Notification API, so WhatsApp believes they are allowed.
+function bridgeToExtension(scope) {
+    if (!scope.parent || scope.parent === scope || scope.__whatsappVscodeBridge) return;
+    scope.__whatsappVscodeBridge = true;
+
+    const post = (message) => scope.parent.postMessage({ source: 'whatsapp-vscode', ...message }, '*');
+
+    function Notification(title, options) {
+        post({ type: 'notify', title: String(title), body: options?.body });
+        return Object.assign(new EventTarget(), { close() {}, onclick: null, onclose: null, onerror: null, onshow: null });
+    }
+    Notification.permission = 'granted';
+    Notification.requestPermission = (callback) => {
+        if (typeof callback === 'function') callback('granted');
+        return Promise.resolve('granted');
+    };
+    scope.Notification = Notification;
+
+    let unread;
+    const report = () => {
+        const count = Number(/^\((\d+)\)/.exec(scope.document.title)?.[1] ?? 0);
+        if (count === unread) return;
+        unread = count;
+        post({ type: 'unread', count });
+    };
+    const watch = () => {
+        report();
+        new scope.MutationObserver(report).observe(scope.document.head, { childList: true, subtree: true, characterData: true });
+    };
+    if (scope.document.readyState === 'loading') scope.document.addEventListener('DOMContentLoaded', watch);
+    else watch();
+}
+
 module.exports = {
     rerouteWhatsAppTraffic,
-    PATCH: `(${rerouteWhatsAppTraffic})(self);\n`,
+    bridgeToExtension,
+    PATCH: `(${rerouteWhatsAppTraffic})(self);\n(${bridgeToExtension})(self);\n`,
 };

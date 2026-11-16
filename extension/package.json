@@ -2,7 +2,7 @@
   "name": "whatsapp-vscode",
   "displayName": "whatsapp-vscode",
   "description": "WhatsApp for VSCode",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "zangico",
   "icon": "images/icon.png",
   "sponsor": {
@@ -39,6 +39,29 @@
         "command": "whatsapp-vscode.buyMeACoffee",
         "title": "WhatsApp: Buy Me a Coffee",
         "icon": "$(heart)"
+      },
+      {
+        "command": "whatsapp-vscode.toggleDoNotDisturb",
+        "title": "WhatsApp: Toggle Do Not Disturb"
+      },
+      {
+        "command": "whatsapp-vscode.sendSelection",
+        "title": "WhatsApp: Copy Selection for Chat"
+      },
+      {
+        "command": "whatsapp-vscode.toggle",
+        "title": "WhatsApp: Toggle Chat"
+      },
+      {
+        "command": "whatsapp-vscode.moveView",
+        "title": "WhatsApp: Move View…"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "whatsapp-vscode.toggle",
+        "key": "ctrl+alt+w",
+        "mac": "cmd+alt+w"
       }
     ],
     "menus": {
@@ -52,6 +75,13 @@
           "command": "whatsapp-vscode.openSettings",
           "when": "view == whatsappWebview",
           "group": "navigation@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "whatsapp-vscode.sendSelection",
+          "when": "editorHasSelection",
+          "group": "9_cutcopypaste@9"
         }
       ]
     },
@@ -104,6 +134,51 @@
           "scope": "application",
           "order": 3,
           "markdownDescription": "Proxy user name, if the proxy requires authentication. Set the password with the **WhatsApp: Set Proxy Password** command."
+        },
+        "whatsapp-vscode.accounts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "scope": "application",
+          "order": 20,
+          "markdownDescription": "Names of extra WhatsApp accounts. The default account always exists. Each extra account has its own login (served from `http://<name>.localhost:<port>`). With more than one account the sidebar shows an account selector."
+        },
+        "whatsapp-vscode.zoom": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 200,
+          "default": 100,
+          "scope": "application",
+          "order": 30,
+          "markdownDescription": "Zoom of the WhatsApp view, in percent."
+        },
+        "whatsapp-vscode.notifications.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "order": 40,
+          "markdownDescription": "Show a VS Code notification for each WhatsApp notification. The WhatsApp view must have been opened in this window."
+        },
+        "whatsapp-vscode.notifications.showPreview": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "order": 41,
+          "markdownDescription": "Include the message text in notifications."
+        },
+        "whatsapp-vscode.notifications.muteWhileDebugging": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "order": 42,
+          "markdownDescription": "Do not show notifications while a debug session is active. Use **WhatsApp: Toggle Do Not Disturb** to mute them manually."
+        },
+        "whatsapp-vscode.statusBar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "order": 50,
+          "markdownDescription": "Show the unread chats counter and the Do Not Disturb indicator in the status bar."
         },
         "whatsapp-vscode.showSupportButton": {
           "type": "boolean",
