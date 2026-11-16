@@ -1,0 +1,153 @@
+{
+  "name": "whatsapp-vscode",
+  "displayName": "whatsapp-vscode",
+  "description": "WhatsApp for VSCode",
+  "version": "1.0.0",
+  "publisher": "livingasync",
+  "icon": "images/icon.png",
+  "sponsor": {
+    "url": "https://buymeacoffee.com/zangico"
+  },
+  "categories": [
+    "Other"
+  ],
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "activationEvents": [],
+  "main": "./src/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zangico/whatsapp-vscode"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "whatsapp-vscode.openWhatsAppWeb",
+        "title": "Open WhatsApp in Tab"
+      },
+      {
+        "command": "whatsapp-vscode.setProxyPassword",
+        "title": "WhatsApp: Set Proxy Password"
+      },
+      {
+        "command": "whatsapp-vscode.openSettings",
+        "title": "WhatsApp: Open Settings",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "whatsapp-vscode.buyMeACoffee",
+        "title": "WhatsApp: Buy Me a Coffee",
+        "icon": "$(heart)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "whatsapp-vscode.buyMeACoffee",
+          "when": "view == whatsappWebview && config.whatsapp-vscode.showSupportButton",
+          "group": "navigation@1"
+        },
+        {
+          "command": "whatsapp-vscode.openSettings",
+          "when": "view == whatsappWebview",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "WhatsApp",
+      "properties": {
+        "whatsapp-vscode.server.port": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535,
+          "default": 49153,
+          "scope": "application",
+          "order": 10,
+          "markdownDescription": "Local port that serves WhatsApp Web to VS Code. If it is used by another program, the next 9 ports are tried in order. WhatsApp keeps a separate login for each port, so changing it means logging in again."
+        },
+        "whatsapp-vscode.proxy.type": {
+          "type": "string",
+          "enum": ["none", "http", "https", "socks4", "socks5"],
+          "enumDescriptions": [
+            "Connect to WhatsApp directly.",
+            "HTTP proxy (CONNECT).",
+            "HTTP proxy reached over TLS.",
+            "SOCKS4 proxy (host names resolved by the proxy).",
+            "SOCKS5 proxy (host names resolved by the proxy)."
+          ],
+          "default": "none",
+          "scope": "application",
+          "order": 0,
+          "description": "Proxy used for all WhatsApp traffic."
+        },
+        "whatsapp-vscode.proxy.host": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "order": 1,
+          "description": "Proxy host name or IP address. Put IPv6 addresses in square brackets, for example [::1]."
+        },
+        "whatsapp-vscode.proxy.port": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 65535,
+          "default": null,
+          "scope": "application",
+          "order": 2,
+          "description": "Proxy port."
+        },
+        "whatsapp-vscode.proxy.username": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "order": 3,
+          "markdownDescription": "Proxy user name, if the proxy requires authentication. Set the password with the **WhatsApp: Set Proxy Password** command."
+        },
+        "whatsapp-vscode.showSupportButton": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "order": 100,
+          "markdownDescription": "Show the heart button in the WhatsApp sidebar header. Enjoying the extension? [Buy me a coffee](https://buymeacoffee.com/zangico) ☕"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "whatsapp-sidebar",
+          "title": "WhatsApp",
+          "icon": "images/sidebar_icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "whatsapp-sidebar": [
+        {
+          "type": "webview",
+          "id": "whatsappWebview",
+          "name": "WhatsApp"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.91.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "http-proxy-middleware": "^2.0.11",
+    "https-proxy-agent": "^7.0.6",
+    "socks-proxy-agent": "^8.0.5"
+  }
+}
