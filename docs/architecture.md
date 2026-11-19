@@ -11,7 +11,7 @@
 | Proxy URL builder | `extension/src/proxyUrl.js` | Extension host (and tests) | `buildProxyUrl(settings, password)`: validates settings, returns a proxy URL, `null` (direct) or throws. |
 | Tests | `extension/test/*.test.js` | Node (`node --test`) | Unit tests for `proxyUrl.js`, `patch.js` and `accounts.js`; `server.test.js` forks the real server to test the port fallback. |
 
-Constants in `server.js`: `HOST = '127.0.0.1'`, `PORT_ATTEMPTS = 10`, `PING_PATH = '/__whatsapp-vscode/ping'`, `PING_REPLY = 'whatsapp-vscode'`, `UPSTREAM = ORIGIN = 'https://web.whatsapp.com'`, `USER_AGENT` (a desktop Chrome), `STRIPPED_HEADERS`.
+Constants in `server.js`: `HOST = '127.0.0.1'`, `PORT_ATTEMPTS = 10`, `PING_PATH = '/__whatsapp-vscode/ping'`, `PING_REPLY = 'whatsapp-sidebar'`, `UPSTREAM = ORIGIN = 'https://web.whatsapp.com'`, `USER_AGENT` (a desktop Chrome), `STRIPPED_HEADERS`.
 
 Command and view IDs: `whatsapp-vscode.openWhatsAppWeb`, `whatsapp-vscode.setProxyPassword`, `whatsapp-vscode.toggleDoNotDisturb`, `whatsapp-vscode.sendSelection`, `whatsapp-vscode.toggle`, `whatsapp-vscode.moveView`, view `whatsappWebview` in container `whatsapp-sidebar`, webview panel type `whatsappWebviewTab`. Secret key: `whatsapp-vscode.proxy.password`. Output channel: `WhatsApp-VSCode`.
 
@@ -66,6 +66,7 @@ The WhatsApp Web page loads its scripts directly from `static.whatsapp.net` (COR
    - If `listen` succeeds, it logs "Listening on ..." and sends `{ ready: <port> }`.
    - If the port fails with `EADDRINUSE` or `EACCES` (the latter covers ports reserved by the OS, for example Windows excluded port ranges), it probes `GET PING_PATH` on that port with a 1 second timeout. The reply `PING_REPLY` means the server of another VS Code window owns the port: it sends `{ ready: <port> }` (the webviews use that server) and retries `listen` on the port every 2 seconds. When the other window releases it, this server takes over with its own proxy settings. If during the retries the port turns out to be held by a foreign program, it picks a port again starting from the base port.
    - Otherwise it logs "Port N is used by another program, trying the next one" and tries the next port.
+   - The server of the old `zangico.whatsapp-vscode` extension answers `whatsapp-vscode`, so while it runs WhatsApp Sidebar treats its port as taken by another program and moves to the next one.
    - If no candidate is usable, it logs and sends `{ error: 'No usable port between A and B' }`; the extension shows an error asking to change `whatsapp-vscode.server.port`.
 5. The extension has no ready promise. It keeps `serverPort` and the set of open webviews. On `{ ready: port }` with a port different from `serverPort`, it sets the HTML of every open webview to an iframe on `http://localhost:<port>`. A webview opened before the first ready message gets its HTML when the message arrives, so WhatsApp Web never loads before a server answers. If the settings are invalid, no server runs and the webviews stay empty. Messages from a replaced (killed) child are ignored.
 6. A change to a `whatsapp-vscode.proxy.*` setting, to `whatsapp-vscode.server.port` or to the stored password restarts the server (a counter, `startRequest`, discards overlapping restarts). A restart that keeps the same port does not reload the open webviews; reload them if connections do not recover.

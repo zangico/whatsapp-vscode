@@ -1,6 +1,6 @@
 {
-  "name": "whatsapp-vscode",
-  "displayName": "whatsapp-vscode",
+  "name": "whatsapp-sidebar",
+  "displayName": "WhatsApp Sidebar",
   "description": "WhatsApp for VSCode",
   "version": "1.1.0",
   "publisher": "zangico",

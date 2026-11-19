@@ -1,5 +1,7 @@
 # WhatsApp for VS Code
 
+> **Moved:** this extension is now published as WhatsApp Sidebar, `zangico.whatsapp-sidebar` (previously `zangico.whatsapp-vscode`). Install this one and uninstall the old one. Settings carry over; set the proxy password again, and scan the QR code again.
+
 A VS Code extension that shows WhatsApp Web (`https://web.whatsapp.com/`) inside VS Code, in the activity-bar sidebar or in an editor tab. A small local server, started by the extension on `127.0.0.1` (port 49153 by default, configurable), serves WhatsApp Web to the webview and sends all WhatsApp traffic, including the chat WebSocket, through an optional HTTP, HTTPS, SOCKS4 or SOCKS5 proxy.
 
 ## Features

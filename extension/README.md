@@ -1,5 +1,7 @@
 ## Features
 
+> **Moved:** this extension is now published as WhatsApp Sidebar, `zangico.whatsapp-sidebar` (previously `zangico.whatsapp-vscode`). Install this one and uninstall the old one. Settings carry over; set the proxy password again, and scan the QR code again.
+
 WhatsApp for VSCode: use WhatsApp Web inside VS Code, in the sidebar or in an editor tab.
 
 - Optional proxy for all WhatsApp traffic: HTTP, HTTPS, SOCKS4 or SOCKS5, with authentication.
@@ -55,6 +57,9 @@ If you find this extension useful, you can [buy me a coffee](https://buymeacoffe
 
 ### 1.1.0
 
+- The extension is now WhatsApp Sidebar; the new id is `zangico.whatsapp-sidebar`
+- If you use `zangico.whatsapp-vscode`, install this one and uninstall the old one
+- Settings carry over; the proxy password must be set again (SecretStorage is per extension id) and the QR code must be scanned again
 - Unread badge on the sidebar icon and in the status bar
 - VS Code notifications with Do Not Disturb, preview and mute-while-debugging settings
 - Multiple accounts (`whatsapp-vscode.accounts`)

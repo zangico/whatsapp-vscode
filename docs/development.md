@@ -85,11 +85,11 @@ To confirm a proxy is used, point `proxyUrl` at it and watch its log; with an un
 
 ```sh
 cd extension
-npx @vscode/vsce package      # produces whatsapp-vscode-<version>.vsix
+npx @vscode/vsce package      # produces whatsapp-sidebar-<version>.vsix
 npx @vscode/vsce publish      # needs a Marketplace token for publisher zangico
 ```
 
-Install a local build with `code --install-extension whatsapp-vscode-<version>.vsix`. `*.vsix` is git-ignored.
+Install a local build with `code --install-extension whatsapp-sidebar-<version>.vsix`. `*.vsix` is git-ignored.
 
 ## Release checklist
 

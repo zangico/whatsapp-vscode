@@ -10,7 +10,7 @@ const { PATCH } = require('./patch');
 const HOST = '127.0.0.1';
 const PORT_ATTEMPTS = 10;
 const PING_PATH = '/__whatsapp-vscode/ping';
-const PING_REPLY = 'whatsapp-vscode';
+const PING_REPLY = 'whatsapp-sidebar';
 const UPSTREAM = 'https://web.whatsapp.com';
 const ORIGIN = 'https://web.whatsapp.com';
 // Without a browser-like user agent and fetch metadata WhatsApp answers with an error page.
