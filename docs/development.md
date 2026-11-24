@@ -47,6 +47,8 @@ npm test        # node --test
 
 These tests open loopback ports, so they need permission to listen on `127.0.0.1` (a sandbox that blocks listening makes them fail).
 
+`extension/test/migrateSettings.test.js` covers the move of `whatsapp-vscode.*` values: an unset new key gets the old value, a set new key keeps its value, and the old key is removed in both cases.
+
 `extension/test/bridge.test.js` covers `bridgeToExtension` with a fake scope (no message outside a frame, unread parsing from the title and posting only on change, the `Notification` stand-in) `extension/test/accounts.test.js` covers the account slugs and URLs, and `extension/test/deviceName.test.js` covers the device name rewrite with a fake `__d`.
 
 Not covered by tests: the proxying itself in `server.js`, `extension.js`, real proxies, VS Code integration. The listed devDependencies `@vscode/test-cli`, `@vscode/test-electron`, `eslint`, `typescript` and `@types/mocha` are installed but not used by any script or config in the repository.

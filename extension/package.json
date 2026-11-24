@@ -2,7 +2,7 @@
   "name": "whatsapp-sidebar",
   "displayName": "WhatsApp Sidebar",
   "description": "WhatsApp for VSCode",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "publisher": "zangico",
   "icon": "images/icon.png",
   "sponsor": {
@@ -68,7 +68,7 @@
       "view/title": [
         {
           "command": "whatsapp-vscode.buyMeACoffee",
-          "when": "view == whatsappWebview && config.whatsapp-vscode.showSupportButton",
+          "when": "view == whatsappWebview && config.whatsapp-sidebar.showSupportButton",
           "group": "navigation@1"
         },
         {
@@ -88,7 +88,7 @@
     "configuration": {
       "title": "WhatsApp",
       "properties": {
-        "whatsapp-vscode.server.port": {
+        "whatsapp-sidebar.server.port": {
           "type": "integer",
           "minimum": 1024,
           "maximum": 65535,
@@ -97,7 +97,7 @@
           "order": 10,
           "markdownDescription": "Local port that serves WhatsApp Web to VS Code. If it is used by another program, the next 9 ports are tried in order. WhatsApp keeps a separate login for each port, so changing it means logging in again."
         },
-        "whatsapp-vscode.proxy.type": {
+        "whatsapp-sidebar.proxy.type": {
           "type": "string",
           "enum": ["none", "http", "https", "socks4", "socks5"],
           "enumDescriptions": [
@@ -112,14 +112,14 @@
           "order": 0,
           "description": "Proxy used for all WhatsApp traffic."
         },
-        "whatsapp-vscode.proxy.host": {
+        "whatsapp-sidebar.proxy.host": {
           "type": "string",
           "default": "",
           "scope": "application",
           "order": 1,
           "description": "Proxy host name or IP address. Put IPv6 addresses in square brackets, for example [::1]."
         },
-        "whatsapp-vscode.proxy.port": {
+        "whatsapp-sidebar.proxy.port": {
           "type": ["integer", "null"],
           "minimum": 1,
           "maximum": 65535,
@@ -128,14 +128,14 @@
           "order": 2,
           "description": "Proxy port."
         },
-        "whatsapp-vscode.proxy.username": {
+        "whatsapp-sidebar.proxy.username": {
           "type": "string",
           "default": "",
           "scope": "application",
           "order": 3,
           "markdownDescription": "Proxy user name, if the proxy requires authentication. Set the password with the **WhatsApp: Set Proxy Password** command."
         },
-        "whatsapp-vscode.accounts": {
+        "whatsapp-sidebar.accounts": {
           "type": "array",
           "items": { "type": "string" },
           "default": [],
@@ -143,7 +143,7 @@
           "order": 20,
           "markdownDescription": "Names of extra WhatsApp accounts. The default account always exists. Each extra account has its own login (served from `http://<name>.localhost:<port>`). With more than one account the sidebar shows an account selector."
         },
-        "whatsapp-vscode.zoom": {
+        "whatsapp-sidebar.zoom": {
           "type": "integer",
           "minimum": 50,
           "maximum": 200,
@@ -152,35 +152,35 @@
           "order": 30,
           "markdownDescription": "Zoom of the WhatsApp view, in percent."
         },
-        "whatsapp-vscode.notifications.enabled": {
+        "whatsapp-sidebar.notifications.enabled": {
           "type": "boolean",
           "default": true,
           "scope": "application",
           "order": 40,
           "markdownDescription": "Show a VS Code notification for each WhatsApp notification. The WhatsApp view must have been opened in this window."
         },
-        "whatsapp-vscode.notifications.showPreview": {
+        "whatsapp-sidebar.notifications.showPreview": {
           "type": "boolean",
           "default": true,
           "scope": "application",
           "order": 41,
           "markdownDescription": "Include the message text in notifications."
         },
-        "whatsapp-vscode.notifications.muteWhileDebugging": {
+        "whatsapp-sidebar.notifications.muteWhileDebugging": {
           "type": "boolean",
           "default": true,
           "scope": "application",
           "order": 42,
           "markdownDescription": "Do not show notifications while a debug session is active. Use **WhatsApp: Toggle Do Not Disturb** to mute them manually."
         },
-        "whatsapp-vscode.statusBar.enabled": {
+        "whatsapp-sidebar.statusBar.enabled": {
           "type": "boolean",
           "default": true,
           "scope": "application",
           "order": 50,
           "markdownDescription": "Show the unread chats counter and the Do Not Disturb indicator in the status bar."
         },
-        "whatsapp-vscode.showSupportButton": {
+        "whatsapp-sidebar.showSupportButton": {
           "type": "boolean",
           "default": true,
           "scope": "application",

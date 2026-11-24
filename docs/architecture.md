@@ -48,7 +48,7 @@ WhatsApp names a linked device after the operating system it reads from the user
 
 ## Accounts
 
-The default account is `http://localhost:<port>`. An extra account named in `whatsapp-vscode.accounts` uses `http://<slug>.localhost:<port>` (`src/accounts.js`). Chromium resolves `*.localhost` to loopback and every host name is a separate origin, so each account has its own WhatsApp storage and login. The server needs no change: it binds `127.0.0.1`, `patch.js` already uses `scope.location.host` for the rerouted URLs, and the cookie `Domain` is stripped. The sidebar webview shows a `<select>` when there is more than one account; switching only changes the iframe `src` and is kept in the webview state. A tab is bound to the account chosen in its QuickPick.
+The default account is `http://localhost:<port>`. An extra account named in `whatsapp-sidebar.accounts` uses `http://<slug>.localhost:<port>` (`src/accounts.js`). Chromium resolves `*.localhost` to loopback and every host name is a separate origin, so each account has its own WhatsApp storage and login. The server needs no change: it binds `127.0.0.1`, `patch.js` already uses `scope.location.host` for the rerouted URLs, and the cookie `Domain` is stripped. The sidebar webview shows a `<select>` when there is more than one account; switching only changes the iframe `src` and is kept in the webview state. A tab is bound to the account chosen in its QuickPick.
 
 ## How WhatsApp traffic is rerouted
 
@@ -69,14 +69,14 @@ The WhatsApp Web page loads its scripts directly from `static.whatsapp.net` (COR
    - If the port fails with `EADDRINUSE` or `EACCES` (the latter covers ports reserved by the OS, for example Windows excluded port ranges), it probes `GET PING_PATH` on that port with a 1 second timeout. The reply `PING_REPLY` means the server of another VS Code window owns the port: it sends `{ ready: <port> }` (the webviews use that server) and retries `listen` on the port every 2 seconds. When the other window releases it, this server takes over with its own proxy settings. If during the retries the port turns out to be held by a foreign program, it picks a port again starting from the base port.
    - Otherwise it logs "Port N is used by another program, trying the next one" and tries the next port.
    - The server of the old `zangico.whatsapp-vscode` extension answers `whatsapp-vscode`, so while it runs WhatsApp Sidebar treats its port as taken by another program and moves to the next one.
-   - If no candidate is usable, it logs and sends `{ error: 'No usable port between A and B' }`; the extension shows an error asking to change `whatsapp-vscode.server.port`.
+   - If no candidate is usable, it logs and sends `{ error: 'No usable port between A and B' }`; the extension shows an error asking to change `whatsapp-sidebar.server.port`.
 5. The extension has no ready promise. It keeps `serverPort` and the set of open webviews. On `{ ready: port }` with a port different from `serverPort`, it sets the HTML of every open webview to an iframe on `http://localhost:<port>`. A webview opened before the first ready message gets its HTML when the message arrives, so WhatsApp Web never loads before a server answers. If the settings are invalid, no server runs and the webviews stay empty. Messages from a replaced (killed) child are ignored.
-6. A change to a `whatsapp-vscode.proxy.*` setting, to `whatsapp-vscode.server.port` or to the stored password restarts the server (a counter, `startRequest`, discards overlapping restarts). A restart that keeps the same port does not reload the open webviews; reload them if connections do not recover.
+6. A change to a `whatsapp-sidebar.proxy.*` setting, to `whatsapp-sidebar.server.port` or to the stored password restarts the server (a counter, `startRequest`, discards overlapping restarts). A restart that keeps the same port does not reload the open webviews; reload them if connections do not recover.
 7. The server exits on IPC `disconnect`, and the extension kills it in `stopServer` (called from `deactivate` and from the subscriptions). It never outlives the extension host.
 
 ## Port and origin
 
-The webview content is an iframe with origin `http://localhost:<port>`. WhatsApp's login session (IndexedDB, localStorage, service worker) lives in the storage of that origin, so each port has its own login. If the port changed on every start the user would be logged out every time, so the port is a setting (`whatsapp-vscode.server.port`, default 49153) and the fallback is deterministic: the base port, then base+1, up to 10 candidates. When the configured port is free again the extension returns to it, and to its login, on the next start. Only one server can own a port at a time; windows share it (see multi-window behaviour in [configuration.md](configuration.md)).
+The webview content is an iframe with origin `http://localhost:<port>`. WhatsApp's login session (IndexedDB, localStorage, service worker) lives in the storage of that origin, so each port has its own login. If the port changed on every start the user would be logged out every time, so the port is a setting (`whatsapp-sidebar.server.port`, default 49153) and the fallback is deterministic: the base port, then base+1, up to 10 candidates. When the configured port is free again the extension returns to it, and to its login, on the next start. Only one server can own a port at a time; windows share it (see multi-window behaviour in [configuration.md](configuration.md)).
 
 The iframe uses `localhost` while the server binds `127.0.0.1`; this relies on `localhost` resolving to IPv4 loopback.
 
@@ -109,5 +109,5 @@ The sidebar and the editor tab are different webviews. Whether they share the lo
 - **Unpatched channels.** `EventSource` and `fetch(new Request(...))` are not rewritten.
 - **Static resources not proxied.** Scripts and media from `static.whatsapp.net` and other hosts load directly from the browser, not through the configured proxy.
 - **One server per port.** Only one window's server serves on a port; its proxy settings apply to all windows sharing it.
-- **One login per port.** Each port is a separate origin, so a fallback port or a changed `whatsapp-vscode.server.port` needs the device to be linked again.
+- **One login per port.** Each port is a separate origin, so a fallback port or a changed `whatsapp-sidebar.server.port` needs the device to be linked again.
 - **Untested proxy types.** HTTP, HTTPS and SOCKS4 were not tested against a real proxy (unit-tested URL building only). SOCKS5 was verified with `curl` against the server (HTML served, patch injected, headers removed).
