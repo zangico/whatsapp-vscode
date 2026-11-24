@@ -2,7 +2,7 @@
   "name": "whatsapp-sidebar",
   "displayName": "WhatsApp Sidebar",
   "description": "WhatsApp for VSCode",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "zangico",
   "icon": "images/icon.png",
   "sponsor": {

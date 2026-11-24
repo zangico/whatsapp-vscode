@@ -55,6 +55,10 @@ If you find this extension useful, you can [buy me a coffee](https://buymeacoffe
 
 ## Release Notes
 
+### 1.1.1
+
+- Fix: WhatsApp did not load, or loaded very slowly, on networks where connecting to WhatsApp takes more than 250 ms ("Error occurred while trying to proxy", ETIMEDOUT)
+
 ### 1.1.0
 
 - The extension is now WhatsApp Sidebar; the new id is `zangico.whatsapp-sidebar`

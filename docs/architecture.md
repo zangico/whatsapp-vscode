@@ -11,6 +11,8 @@
 | Proxy URL builder | `extension/src/proxyUrl.js` | Extension host (and tests) | `buildProxyUrl(settings, password)`: validates settings, returns a proxy URL, `null` (direct) or throws. |
 | Tests | `extension/test/*.test.js` | Node (`node --test`) | Unit tests for `proxyUrl.js`, `patch.js` and `accounts.js`; `server.test.js` forks the real server to test the port fallback. |
 
+At startup `server.js` calls `net.setDefaultAutoSelectFamilyAttemptTimeout(2000)`: Node connects to a host with several addresses one address at a time and abandons each attempt after 250 ms by default, which made every attempt fail on networks where the TCP connection takes longer (ETIMEDOUT, then EADDRNOTAVAIL on IPv6).
+
 Constants in `server.js`: `HOST = '127.0.0.1'`, `PORT_ATTEMPTS = 10`, `PING_PATH = '/__whatsapp-vscode/ping'`, `PING_REPLY = 'whatsapp-sidebar'`, `UPSTREAM = ORIGIN = 'https://web.whatsapp.com'`, `USER_AGENT` (a desktop Chrome), `STRIPPED_HEADERS`.
 
 Command and view IDs: `whatsapp-vscode.openWhatsAppWeb`, `whatsapp-vscode.setProxyPassword`, `whatsapp-vscode.toggleDoNotDisturb`, `whatsapp-vscode.sendSelection`, `whatsapp-vscode.toggle`, `whatsapp-vscode.moveView`, view `whatsappWebview` in container `whatsapp-sidebar`, webview panel type `whatsappWebviewTab`. Secret key: `whatsapp-vscode.proxy.password`. Output channel: `WhatsApp-VSCode`.

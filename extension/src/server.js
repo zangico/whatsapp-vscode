@@ -2,6 +2,7 @@
 // (see extension.js), receives its configuration over IPC ({ proxyUrl, port }) and answers
 // { ready: <port> } once a server answers on that port, or { error } when no port is usable.
 const http = require('http');
+const net = require('net');
 const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
 const { SocksProxyAgent } = require('socks-proxy-agent');
 const { HttpsProxyAgent } = require('https-proxy-agent');
@@ -16,6 +17,10 @@ const ORIGIN = 'https://web.whatsapp.com';
 // Without a browser-like user agent and fetch metadata WhatsApp answers with an error page.
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36';
 // Headers WhatsApp must not send to the browser: they block framing, or the rerouted connections to localhost.
+// Node tries the addresses of a host one after the other and abandons each attempt after 250 ms by default,
+// so on a slow network every attempt is cut short and the connection fails with ETIMEDOUT.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
+
 const STRIPPED_HEADERS = [
     'x-frame-options',
     'content-security-policy',
